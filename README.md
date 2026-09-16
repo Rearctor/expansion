@@ -91,6 +91,26 @@ integrated, or committed to. This section names research areas only.
 - Is there a form of expansion that preserves the determinism of the native lifecycle,
   or is some determinism necessarily given up?
 
+## Research workspace
+
+Current design work is organized across architecture notes, draft specifications and
+RFCs. Everything below is research only: no implementation exists, no destination
+network is named, and no model is recommended.
+
+**Architecture**
+- [Architecture](docs/architecture.md) - what the native lifecycle guarantees and where expansion strains it
+- [Expansion lifecycle](docs/expansion-lifecycle.md) - Arc reaction through ignition, eligibility and additional presence
+
+**Draft specifications**
+- [Expansion manifest schema](specs/expansion-manifest.schema.json) - draft JSON Schema; destinations are opaque identifiers only
+
+**RFCs**
+- [RFC 0001 - Canonical representation](rfcs/0001-canonical-representation.md) - which instance is authoritative, and supply accounting
+
+**Open research**
+- [Trust models](research/trust-models.md) - bridge, lock/mint, burn/mint, liquidity-based and message-verified, compared
+- [Liquidity fragmentation](research/liquidity-fragmentation.md) - depth costs, access benefits, and the question that decides it
+
 ## Links
 
 [Website](https://rearctor.io) · [Docs](https://rearctor.io/docs) · [GitHub](https://github.com/Rearctor) · [X](https://x.com/JoinRearctor) · [Telegram](https://t.me/rearctor)

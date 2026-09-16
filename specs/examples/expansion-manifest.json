@@ -1,0 +1,54 @@
+{
+  "schema_version": "0.1",
+  "source": {
+    "chain": "arc",
+    "reaction_id": "reaction-0000000000000000000000000000000000000000000000000000000000000001",
+    "ignited": true,
+    "migrated_position_reference": "univ4:0x5c1d0b7e9a34c8f21e0b7d5946a3c018fe72b4d9"
+  },
+  "eligibility": {
+    "framing": "declared-at-spark",
+    "status": "unresolved",
+    "declared_at_spark": true
+  },
+  "representation": {
+    "destination_ref": "destination-alpha",
+    "model": "lock-mint",
+    "canonical_origin": "arc",
+    "supply_invariant": {
+      "claim": "global-total-fixed",
+      "guaranteed_by": "mechanism"
+    },
+    "additional_liquidity": {
+      "separately_funded": true,
+      "source_of_funds": "unspecified"
+    }
+  },
+  "fee_accounting": {
+    "applies_at_destination": "undetermined",
+    "return_path_to_arc": null,
+    "status": "unresolved"
+  },
+  "trust_assumptions": [
+    {
+      "assumption": "Mints at the destination occur only in strict correspondence with locks on Arc.",
+      "failure_impact": "Representations exceed locked backing. The global supply claim becomes false in practice while remaining true on Arc.",
+      "mitigation": null
+    },
+    {
+      "assumption": "The party or set authorising mints remains honest and available.",
+      "failure_impact": "Unauthorised issuance, or a halt that freezes the representation.",
+      "mitigation": null
+    },
+    {
+      "assumption": "Locked supply is drawn from circulating supply on Arc and never from the permanent migrated position.",
+      "failure_impact": "If violated, the design would require a principal-withdrawal path that does not exist in Rearctor's contracts.",
+      "mitigation": "Structural: no such withdrawal function exists, so the violation is not reachable through Rearctor."
+    }
+  ],
+  "reversibility": {
+    "supported": "undetermined",
+    "notes": "A path back would have to be absorbed by Arc liquidity that is fixed and cannot be added to on demand. Unresolved."
+  },
+  "notes": "ILLUSTRATIVE AND NON-NORMATIVE. This example exists to exercise the draft schema. It does not describe a planned, approved, or existing expansion. 'destination-alpha' is a deliberately opaque placeholder: no destination network is named, selected, or implied anywhere in this repository. The 'lock-mint' model is used here only to show how a model's trust assumptions must be recorded - no model is recommended; see research/trust-models.md. Note that supply_invariant.guaranteed_by is 'mechanism', not 'construction': the distinction is the point of the field. Illustrative only. Not protocol defaults or committed parameters."
+}

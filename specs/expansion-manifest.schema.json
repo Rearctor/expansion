@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Rearctor/expansion/specs/expansion-manifest.schema.json",
+  "title": "Expansion Manifest (draft)",
+  "description": "DRAFT, RESEARCH ONLY. A hypothetical description of an expansion arrangement for an ignited reaction. No destination network is named, selected, or implied: destinations are referenced by opaque identifier only. Nothing described here is implemented, and no expansion mechanism exists. Field names and value domains are under research and are not final.",
+  "type": "object",
+  "required": ["schema_version", "source", "eligibility", "representation", "trust_assumptions"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Draft revision. Not a released version number.",
+      "pattern": "^0[.][0-9]+$"
+    },
+    "source": {
+      "type": "object",
+      "description": "The originating reaction on Arc. Always the authoritative origin in this draft.",
+      "required": ["chain", "reaction_id", "ignited"],
+      "additionalProperties": false,
+      "properties": {
+        "chain": {
+          "type": "string",
+          "description": "Origin chain. Fixed to Arc: expansion originates from an Arc reaction by definition.",
+          "const": "arc"
+        },
+        "reaction_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "ignited": {
+          "type": "boolean",
+          "description": "Must be true. Expansion is considered strictly post-ignition in this research direction."
+        },
+        "migrated_position_reference": {
+          "type": ["string", "null"],
+          "description": "Reference to the permanent Uniswap V4 position on Arc. Present for context; this position is never a source of funds for expansion."
+        }
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "description": "How this reaction became eligible to expand. All four framings are unresolved; see docs/expansion-lifecycle.md.",
+      "required": ["framing", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "framing": {
+          "type": "string",
+          "enum": ["automatic", "creator-elected", "declared-at-spark", "threshold-gated"]
+        },
+        "status": {
+          "type": "string",
+          "description": "Every eligibility framing in this repository is unresolved. Other values are reserved and not in use.",
+          "enum": ["unresolved", "provisional", "agreed"]
+        },
+        "declared_at_spark": {
+          "type": ["boolean", "null"],
+          "description": "Whether eligibility was fixed before the reaction's first trade. Null where the framing does not define this."
+        }
+      }
+    },
+    "representation": {
+      "type": "object",
+      "description": "How the asset is represented in the additional ecosystem.",
+      "required": ["destination_ref", "model", "canonical_origin", "supply_invariant"],
+      "additionalProperties": false,
+      "properties": {
+        "destination_ref": {
+          "type": "string",
+          "description": "OPAQUE IDENTIFIER ONLY. Deliberately not a chain name, chain id, or anything resolvable to a specific network. No destination is named in this repository.",
+          "pattern": "^destination-[a-z0-9]{1,16}$"
+        },
+        "model": {
+          "type": "string",
+          "description": "Representation model under consideration. No model is recommended; see research/trust-models.md.",
+          "enum": [
+            "canonical-bridge",
+            "lock-mint",
+            "burn-mint",
+            "liquidity-based",
+            "message-verified"
+          ]
+        },
+        "canonical_origin": {
+          "type": "string",
+          "description": "Which side is authoritative. 'arc' is the only value consistent with the current draft; others are recorded to make the alternatives explicit, not to endorse them.",
+          "enum": ["arc", "destination", "undetermined"]
+        },
+        "supply_invariant": {
+          "type": "object",
+          "description": "How, if at all, a global supply invariant is maintained, and by what means it is guaranteed.",
+          "required": ["claim", "guaranteed_by"],
+          "additionalProperties": false,
+          "properties": {
+            "claim": {
+              "type": "string",
+              "enum": ["global-total-fixed", "per-chain-total-fixed", "no-invariant-claimed"]
+            },
+            "guaranteed_by": {
+              "type": "string",
+              "description": "Critical distinction. 'construction' means arithmetic truth; 'mechanism' means the invariant holds only while a mechanism behaves correctly. These must never be presented as equivalent.",
+              "enum": ["construction", "mechanism", "unspecified"]
+            }
+          }
+        },
+        "additional_liquidity": {
+          "type": ["object", "null"],
+          "description": "Liquidity at the destination. Always additional and separately funded: Arc migrated liquidity cannot be relocated.",
+          "required": ["separately_funded", "source_of_funds"],
+          "additionalProperties": false,
+          "properties": {
+            "separately_funded": {
+              "type": "boolean",
+              "description": "Must be true. A value of false would imply relocating permanent Arc liquidity, which has no mechanism."
+            },
+            "source_of_funds": {
+              "type": "string",
+              "enum": ["reaction-allocation", "creator-provided", "third-party", "unspecified"]
+            }
+          }
+        }
+      }
+    },
+    "fee_accounting": {
+      "type": ["object", "null"],
+      "description": "Whether and how the 30/70 distribution applies at the destination. Entirely unresolved.",
+      "required": ["applies_at_destination", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "applies_at_destination": { "type": "string", "enum": ["yes", "no", "undetermined"] },
+        "return_path_to_arc": { "type": ["string", "null"], "maxLength": 300 },
+        "status": { "type": "string", "enum": ["unresolved", "provisional", "agreed"] }
+      }
+    },
+    "trust_assumptions": {
+      "type": "array",
+      "description": "Every assumption the native Arc lifecycle does not require. Must be non-empty: every expansion model introduces at least one. An empty array would be a claim that expansion is trustless, which no model supports.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["assumption", "failure_impact"],
+        "additionalProperties": false,
+        "properties": {
+          "assumption": { "type": "string", "maxLength": 500 },
+          "failure_impact": { "type": "string", "maxLength": 500 },
+          "mitigation": { "type": ["string", "null"], "maxLength": 500 }
+        }
+      }
+    },
+    "reversibility": {
+      "type": ["object", "null"],
+      "description": "Whether holders at the destination have a path back to Arc. Unresolved; see docs/expansion-lifecycle.md.",
+      "required": ["supported"],
+      "additionalProperties": false,
+      "properties": {
+        "supported": { "type": "string", "enum": ["yes", "no", "undetermined"] },
+        "notes": { "type": "string", "maxLength": 1000 }
+      }
+    },
+    "notes": { "type": "string", "maxLength": 2000 }
+  }
+}
